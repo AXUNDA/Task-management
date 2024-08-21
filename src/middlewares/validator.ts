@@ -50,11 +50,6 @@ const schemas = {
   updateTaskStatus: Joi.object({
     status: Joi.string().valid("TO_DO", "IN_PROGRESS", "COMPLETED"),
   }),
-  updateMenuItem: Joi.object({
-    name: Joi.string().optional(),
-    price: Joi.number().optional(),
-    description: Joi.string().optional(),
-  }),
 };
 
 // Validate object with methods
@@ -63,7 +58,8 @@ const validate = {
 
   CreateTask: validateRequest(schemas.createTask),
   UUID: validateParams(schemas.uuid),
-  UpdateMenuItem: validateRequest(schemas.updateMenuItem),
+  createComment: validateRequest(schemas.createComment),
+  updateTask: validateRequest(schemas.updateTaskStatus),
 };
 
 export { validate };

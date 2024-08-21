@@ -13,7 +13,7 @@ export default {
     return await prisma.task.update({ where: where, data: dto });
   },
 
-  async getTasks(where: Prisma.TaskWhereUniqueInput) {
+  async getTasks(where: Prisma.TaskWhereInput) {
     return await prisma.task.findMany({ where: where });
   },
 
@@ -27,7 +27,6 @@ export default {
   async createComment(dto: Prisma.CommentCreateInput) {
     return await prisma.comment.create({ data: dto });
   },
-
   async updateComment(
     where: Prisma.CommentWhereUniqueInput,
     dto: Prisma.CommentUpdateInput,
