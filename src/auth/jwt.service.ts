@@ -15,7 +15,7 @@ const jwtService = {
 
   async verify(token: string) {
     try {
-      return await jwt.verify(token, config.JWT_KEY as string);
+      return jwt.verify(token, config.JWT_KEY as string);
     } catch (error: any) {
       return Promise.reject(new CustomError("un-authorized", 409));
     }

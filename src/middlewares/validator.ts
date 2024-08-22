@@ -36,10 +36,9 @@ const schemas = {
   createTask: Joi.object({
     title: Joi.string().required(),
     name: Joi.string().required(),
-    userId: Joi.string().uuid().required(),
-
     tag: Joi.string().valid("URGENT", "BUG", "FEATURE"),
     description: Joi.string().required(),
+    email: Joi.string().email().required().optional(),
   }),
   uuid: Joi.object({
     id: Joi.string().uuid().required(),
@@ -48,7 +47,7 @@ const schemas = {
     comment: Joi.string().required(),
   }),
   updateTaskStatus: Joi.object({
-    status: Joi.string().valid("TO_DO", "IN_PROGRESS", "COMPLETED"),
+    status: Joi.string().valid("TO_DO", "IN_PROGRESS", "COMPLETED").required(),
   }),
 };
 

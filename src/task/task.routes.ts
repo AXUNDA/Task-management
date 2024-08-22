@@ -1,5 +1,5 @@
 import express, { Router } from "express";
-import checkToken from "../middlewares/checkAdmin";
+import checkToken from "../middlewares/checkToken";
 const router: Router = express.Router();
 import { validate } from "../middlewares/validator";
 import taskController from "./task.controller";
@@ -12,11 +12,11 @@ router
   .get(validate.UUID, taskController.getTask)
   .patch(validate.updateTask, taskController.updateTask)
   .delete(validate.UUID, taskController.deleteTask)
-  .put(validate.createComment, taskController.createComment);
+  .put(validate.UUID, validate.createComment, taskController.createComment);
 
 router
   .route("/comments/:id")
-  .delete(taskController.deleteComment)
-  .patch(taskController.updateComment);
+  .delete(validate.UUID, taskController.deleteComment)
+  .patch(validate.UUID, taskController.updateComment);
 
 export default router;

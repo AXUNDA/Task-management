@@ -4,7 +4,8 @@ import taskService from "./task.service";
 export default {
   async createTask(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await taskService.createTask(req.body);
+      const { id } = res.locals.user;
+      const data = await taskService.createTask(req.body, id);
       return res.status(201).json(data);
     } catch (error) {
       next(error);
@@ -13,7 +14,15 @@ export default {
   async updateTask(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data = await taskService.updateTask(req.body, { id });
+      const user = res.locals.user;
+      const data = await taskService.updateTask(
+        req.body,
+        {
+          id,
+          userId: user.id,
+        },
+        user,
+      );
       return res.status(200).json(data);
     } catch (error) {
       next(error);
@@ -49,9 +58,11 @@ export default {
   async createComment(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+      const user = res.locals.user;
       const data = await taskService.createComment({
         ...req.body,
         taskId: id,
+        userId: user.id,
       });
       return res.status(200).json(data);
     } catch (error) {
@@ -61,10 +72,18 @@ export default {
   async deleteComment(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data = await taskService.deleteComment({
-        id,
-      });
-      return res.status(200).json(data);
+      const user = res.locals.user;
+
+      await taskService.deleteComment(
+        {
+          id,
+          userId: user.id,
+        },
+        user,
+      );
+      return res
+        .status(200)
+        .json({ message: "resource deleted", success: true });
     } catch (error) {
       next(error);
     }
@@ -72,7 +91,11 @@ export default {
   async updateComment(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
-      const data = await taskService.updateComment({ id }, req.body);
+      const user = res.locals.user;
+      const data = await taskService.updateComment(
+        { id, userId: user.id },
+        req.body,
+      );
       return res.status(200).json(data);
     } catch (error) {
       next(error);

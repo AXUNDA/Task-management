@@ -9,10 +9,14 @@ export default {
     try {
       dto.password = await argon2.hash(dto.password);
       const data = await userRepository.createUser(dto);
-      await jwtService.sign({
+      const token = await jwtService.sign({
         id: data.id,
       });
-    } catch (error) {
+      return { access_token: token };
+    } catch (error: any) {
+      console.log(error.code);
+      if ((error.code = "P2002"))
+        return Promise.reject(new CustomError("email already taken", 409));
       return Promise.reject(error);
     }
   },
@@ -21,6 +25,7 @@ export default {
       const user = await userRepository.getUser({
         email: dto.email,
       });
+      console.log(user);
       if (
         !user &&
         (await argon2.verify(user!.password, dto.password as string))
@@ -35,9 +40,12 @@ export default {
     }
   },
   async setAsAdmin(dto: Prisma.UserWhereUniqueInput) {
-    await userRepository.updateUser({ isAdmin: true }, dto);
     try {
-    } catch (error) {
+      await userRepository.updateUser({ isAdmin: true }, dto);
+    } catch (error: any) {
+      console.log(error);
+      if ((error.code = "P2025"))
+        return Promise.reject(new CustomError("user not found", 404));
       return Promise.reject(error);
     }
   },

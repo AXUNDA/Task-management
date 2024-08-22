@@ -13,14 +13,16 @@ export default async function checkToken(
     const token = req.headers.authorization?.split(" ")[1];
     if (!token) return res.sendStatus(401);
 
-    const payload = await jwtService.verify(token);
-    const user = await userRepository.getUser(
-      payload as Prisma.UserWhereUniqueInput,
-    );
+    const payload: any = await jwtService.verify(token);
+    const user = await userRepository.getUser({
+      id: payload.id,
+    } as Prisma.UserWhereUniqueInput);
+
     if (!user) return res.sendStatus(403);
     res.locals.user = user;
     return next();
   } catch (err) {
+    console.log(err);
     next(err);
   }
 }

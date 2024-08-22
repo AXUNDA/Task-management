@@ -20,7 +20,10 @@ export default {
   },
   async setAsAdmin(req: Request, res: Response, next: NextFunction) {
     try {
-      const data = await authService.setAsAdmin(req.body);
+      await authService.setAsAdmin(req.body);
+      return res
+        .status(200)
+        .json({ success: true, message: "user set as admin" });
     } catch (error) {
       next(error);
     }
