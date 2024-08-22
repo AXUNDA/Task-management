@@ -39,6 +39,7 @@ const schemas = {
     tag: Joi.string().valid("URGENT", "BUG", "FEATURE"),
     description: Joi.string().required(),
     email: Joi.string().email().required().optional(),
+    dueDate: Joi.date().required(),
   }),
   uuid: Joi.object({
     id: Joi.string().uuid().required(),

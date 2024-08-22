@@ -5,6 +5,7 @@ export interface createTask {
   tag: TAG;
   email?: string;
   userId?: string;
+  dueDate: Date;
 }
 
 enum TAG {

@@ -20,6 +20,7 @@ export default {
           description: dto.description,
           tag: dto.tag,
           userId: dto.userId,
+          dueDate: new Date(dto.dueDate).toISOString(),
         });
 
         return task;
@@ -30,8 +31,10 @@ export default {
         description: dto.description,
         tag: dto.tag,
         userId: user,
+        dueDate: new Date(dto.dueDate).toISOString(),
       });
     } catch (error) {
+      console.log(error);
       return Promise.reject(error);
     }
   },
