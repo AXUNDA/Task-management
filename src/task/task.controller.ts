@@ -30,8 +30,8 @@ export default {
   },
   async getTasks(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = res.locals.user;
-      const data = await taskService.getTasks({ userId: id });
+      const user = res.locals.user;
+      const data = await taskService.getTasks({ userId: user.id }, user);
       return res.status(200).json(data);
     } catch (error) {
       next(error);

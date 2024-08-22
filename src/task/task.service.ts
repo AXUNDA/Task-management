@@ -54,8 +54,11 @@ export default {
       return Promise.reject(error);
     }
   },
-  async getTasks(where: Prisma.TaskWhereInput) {
+  async getTasks(where: Prisma.TaskWhereInput, user: User) {
     try {
+      if (user.isAdmin) {
+        return await taskRepository.getTasks({});
+      }
       return await taskRepository.getTasks(where);
     } catch (error) {
       return Promise.reject(error);

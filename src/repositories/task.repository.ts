@@ -27,7 +27,27 @@ export default {
   },
 
   async getTasks(where: Prisma.TaskWhereInput) {
-    const task = await prisma.task.findMany({ where: where });
+    const task = await prisma.task.findMany({
+      where: where,
+      include: {
+        assignedTo: {
+          select: {
+            email: true,
+          },
+        },
+        comments: {
+          select: {
+            comment: true,
+            id: true,
+            user: {
+              select: {
+                email: true,
+              },
+            },
+          },
+        },
+      },
+    });
     const taskWithoutUserIds = task.map((task) => {
       const { userId, ...taskWithoutUserId } = task;
       return taskWithoutUserId;
