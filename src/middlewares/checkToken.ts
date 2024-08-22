@@ -17,7 +17,7 @@ export default async function checkToken(
     const user = await userRepository.getUser({
       id: payload.id,
     } as Prisma.UserWhereUniqueInput);
-
+    console.log(user);
     if (!user) return res.sendStatus(403);
     res.locals.user = user;
     return next();

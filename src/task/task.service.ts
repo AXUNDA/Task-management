@@ -3,36 +3,41 @@ import taskRepository from "../repositories/task.repository";
 import { createTask } from "../common/interfaces";
 import userRepository from "../repositories/user.repository";
 import CustomError from "../common/customError";
+import mail from "../common/mailer";
 
 export default {
-  async createTask(dto: createTask, user: string) {
+  async createTask(dto: createTask, user: User) {
     try {
+      let recipientUser;
+      let email;
+
       if (dto.email != null && dto.email != undefined) {
-        const user = await userRepository.getUser({ email: dto.email });
-        if (!user) {
+        recipientUser = await userRepository.getUser({ email: dto.email });
+        if (!recipientUser) {
           return Promise.reject(new CustomError("User not found", 404));
         }
-        // send email to user to notfiy
+        dto.userId = recipientUser.id;
+        email = dto.email;
+      } else {
         dto.userId = user.id;
-        delete dto.email;
-        const task = await taskRepository.createTask({
-          title: dto.title,
-          description: dto.description,
-          tag: dto.tag,
-          userId: dto.userId,
-          dueDate: new Date(dto.dueDate).toISOString(),
-        });
-
-        return task;
-        // dto.userId = user.id;
+        email = user.email;
       }
-      return await taskRepository.createTask({
+
+      const task = await taskRepository.createTask({
         title: dto.title,
         description: dto.description,
         tag: dto.tag,
-        userId: user,
+        userId: dto.userId,
         dueDate: new Date(dto.dueDate).toISOString(),
       });
+
+      await mail(
+        email,
+        "New Task",
+        `Hello, the ${dto.title} task has been assigned to you. It is due on ${dto.dueDate},check your dashboard for details`,
+      );
+
+      return task;
     } catch (error) {
       console.log(error);
       return Promise.reject(error);
@@ -45,7 +50,7 @@ export default {
   ) {
     try {
       if (user.isAdmin) {
-        return await taskRepository.updateTask(dto, where);
+        return await taskRepository.updateTask(dto, { id: where.id });
       }
       return await taskRepository.updateTask(dto, where);
     } catch (error: any) {
@@ -76,8 +81,7 @@ export default {
   },
   async deleteTask(where: Prisma.TaskWhereUniqueInput) {
     try {
-      const deleted = await taskRepository.deleteTask(where);
-      console.log(deleted);
+      await taskRepository.deleteTask(where);
     } catch (error) {
       return Promise.reject(error);
     }

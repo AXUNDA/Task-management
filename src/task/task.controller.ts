@@ -4,8 +4,8 @@ import taskService from "./task.service";
 export default {
   async createTask(req: Request, res: Response, next: NextFunction) {
     try {
-      const { id } = res.locals.user;
-      const data = await taskService.createTask(req.body, id);
+      const user = res.locals.user;
+      const data = await taskService.createTask(req.body, user);
       return res.status(201).json(data);
     } catch (error) {
       next(error);
