@@ -6,7 +6,7 @@ import taskController from "./task.controller";
 
 router.use(checkToken);
 router.post("/", validate.CreateTask, taskController.createTask);
-router.get("/", taskController.getTasks);
+router.get("/", validate.getTasks, taskController.getTasks);
 router
   .route("/:id")
   .get(validate.UUID, taskController.getTask)

@@ -26,17 +26,35 @@ const validateParams = (schema: Joi.ObjectSchema) => {
     return next();
   };
 };
+const validateQuery = (schema: Joi.ObjectSchema) => {
+  return (req: Request, res: Response, next: NextFunction) => {
+    const { error } = schema.validate(req.query);
+
+    if (error) {
+      return res.status(400).json({
+        error: error.details[0].message,
+      });
+    }
+    return next();
+  };
+};
 
 const schemas = {
   signup: Joi.object({
     email: Joi.string().email().required(),
     password: Joi.string().required().min(6).max(20),
   }),
+  getTasks: Joi.object({
+    page: Joi.string().optional(),
+    tag: Joi.string().valid("URGENT", "BUG", "FEATURE").optional(),
+    dueDate: Joi.date().optional(),
+    status: Joi.string().valid("TO_DO", "IN_PROGRESS", "COMPLETED").optional(),
+  }),
 
   createTask: Joi.object({
     title: Joi.string().required(),
     name: Joi.string().required(),
-    tag: Joi.string().valid("URGENT", "BUG", "FEATURE"),
+    tag: Joi.string().valid("URGENT", "BUG", "FEATURE").required(),
     description: Joi.string().required(),
     email: Joi.string().email().required().optional(),
     dueDate: Joi.date().required(),
@@ -60,6 +78,7 @@ const validate = {
   UUID: validateParams(schemas.uuid),
   createComment: validateRequest(schemas.createComment),
   updateTask: validateRequest(schemas.updateTaskStatus),
+  getTasks: validateQuery(schemas.getTasks),
 };
 
 export { validate };

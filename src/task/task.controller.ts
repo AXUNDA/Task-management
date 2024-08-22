@@ -1,4 +1,4 @@
-import { Request, Response, NextFunction } from "express";
+import { Request, Response, NextFunction, query } from "express";
 import taskService from "./task.service";
 
 export default {
@@ -30,16 +30,29 @@ export default {
   },
   async getTasks(req: Request, res: Response, next: NextFunction) {
     try {
-      const user = res.locals.user;
-      const data = await taskService.getTasks({ userId: user.id }, user);
+      console.log(req.query);
+      if (req.query.dueDate)
+        req.query.dueDate = new Date(req.query.dueDate as any).toISOString();
+
+      const { page, ...queryWithoutPage } = req.query;
+
+      const data = await taskService.getTasks(
+        {
+          ...queryWithoutPage,
+        },
+
+        Number(req.query.page) || 1,
+      );
       return res.status(200).json(data);
     } catch (error) {
+      console.log(error);
       next(error);
     }
   },
   async getTask(req: Request, res: Response, next: NextFunction) {
     try {
       const { id } = req.params;
+
       const data = await taskService.getTask({ id });
       return res.status(200).json(data);
     } catch (error) {

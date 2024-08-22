@@ -26,8 +26,23 @@ export default {
     return await prisma.task.update({ where: where, data: dto });
   },
 
-  async getTasks(where: Prisma.TaskWhereInput) {
+  async getTasks(where: Prisma.TaskWhereInput, page: number = 1) {
+    const pageSize = 10;
+    const skip = (page - 1) * pageSize;
     const task = await prisma.task.findMany({
+      where: where,
+      skip: skip,
+      take: pageSize,
+    });
+    const taskWithoutUserIds = task.map((task) => {
+      const { userId, ...taskWithoutUserId } = task;
+      return taskWithoutUserId;
+    });
+    return taskWithoutUserIds;
+  },
+
+  async getTask(where: Prisma.TaskWhereUniqueInput) {
+    const task = await prisma.task.findUnique({
       where: where,
       include: {
         assignedTo: {
@@ -48,15 +63,6 @@ export default {
         },
       },
     });
-    const taskWithoutUserIds = task.map((task) => {
-      const { userId, ...taskWithoutUserId } = task;
-      return taskWithoutUserId;
-    });
-    return taskWithoutUserIds;
-  },
-
-  async getTask(where: Prisma.TaskWhereUniqueInput) {
-    const task = await prisma.task.findUnique({ where: where });
     if (!task) {
       return null;
     }

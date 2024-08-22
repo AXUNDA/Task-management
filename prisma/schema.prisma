@@ -27,7 +27,7 @@ model Task{
    title String
    description String
    status Status @default(TO_DO)
-   tag  TAG?
+   tag  TAG @default(BUG)
    userId String 
    assignedTo  User @relation(fields: [userId], references: [id])
    createdAt DateTime @default(now())
