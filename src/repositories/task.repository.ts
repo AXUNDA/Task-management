@@ -31,6 +31,13 @@ export default {
     const skip = (page - 1) * pageSize;
     const task = await prisma.task.findMany({
       where: where,
+      include: {
+        assignedTo: {
+          select: {
+            email: true,
+          },
+        },
+      },
       skip: skip,
       take: pageSize,
     });
